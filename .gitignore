@@ -1,0 +1,37 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node modules (if you add build tools later)
+node_modules/
+
+# Build files
+*.log
+*.map
+
+# WordPress specific
+*.sql
+*.tar.gz
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Cache files
+.sass-cache/
+*.css.map
+*.scss.map
