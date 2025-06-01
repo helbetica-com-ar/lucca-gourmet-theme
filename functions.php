@@ -51,6 +51,287 @@ function twentytwentyfive_child_enqueue_styles() {
 }
 add_action('wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_styles');
 
+// Register navigation menu
+function twentytwentyfive_child_register_menus() {
+    register_nav_menus(array(
+        'primary' => __('Primary Menu', 'twentytwentyfive-child'),
+        'lucca-menu' => __('Lucca Menu', 'twentytwentyfive-child'),
+    ));
+}
+add_action('init', 'twentytwentyfive_child_register_menus');
+
+// Add cart to menu
+function twentytwentyfive_child_add_cart_to_menu($items, $args) {
+    if ($args->theme_location == 'primary' && class_exists('WooCommerce')) {
+        $cart_count = WC()->cart->get_cart_contents_count();
+        $cart_url = wc_get_cart_url();
+        
+        $cart_item = '<li class="menu-item lucca-cart-menu-item">';
+        $cart_item .= '<a href="' . esc_url($cart_url) . '" class="lucca-cart-link">';
+        $cart_item .= '<svg class="lucca-cart-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">';
+        $cart_item .= '<path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        $cart_item .= '</svg>';
+        $cart_item .= '<span class="lucca-cart-count" data-count="' . $cart_count . '">' . $cart_count . '</span>';
+        $cart_item .= '</a>';
+        $cart_item .= '</li>';
+        
+        $items .= $cart_item;
+    }
+    
+    return $items;
+}
+add_filter('wp_nav_menu_items', 'twentytwentyfive_child_add_cart_to_menu', 10, 2);
+
+// Create main menu programmatically
+function twentytwentyfive_child_create_main_menu() {
+    // Check if menu already exists
+    $menu_name = 'Main Menu';
+    $menu_exists = wp_get_nav_menu_object($menu_name);
+    
+    if (!$menu_exists) {
+        // Create the menu
+        $menu_id = wp_create_nav_menu($menu_name);
+        
+        if (!is_wp_error($menu_id)) {
+            // Add Home page first
+            $home_page = get_option('page_on_front');
+            if ($home_page) {
+                wp_update_nav_menu_item($menu_id, 0, array(
+                    'menu-item-title' => 'Home',
+                    'menu-item-object' => 'page',
+                    'menu-item-object-id' => $home_page,
+                    'menu-item-type' => 'post_type',
+                    'menu-item-status' => 'publish',
+                    'menu-item-position' => 1
+                ));
+            } else {
+                // Add generic home link if no front page set
+                wp_update_nav_menu_item($menu_id, 0, array(
+                    'menu-item-title' => 'Home',
+                    'menu-item-url' => home_url('/'),
+                    'menu-item-type' => 'custom',
+                    'menu-item-status' => 'publish',
+                    'menu-item-position' => 1
+                ));
+            }
+            
+            // Find the Lucca page (or pages with the Lucca template)
+            $lucca_pages = get_posts(array(
+                'post_type' => 'page',
+                'meta_query' => array(
+                    array(
+                        'key' => '_wp_page_template',
+                        'value' => 'template-lucca-products.php'
+                    )
+                ),
+                'posts_per_page' => 1
+            ));
+            
+            // If no page with template found, look for page with "lucca" in title or slug
+            if (empty($lucca_pages)) {
+                $lucca_pages = get_posts(array(
+                    'post_type' => 'page',
+                    'posts_per_page' => 1,
+                    's' => 'lucca'
+                ));
+            }
+            
+            // Add Lucca page to menu
+            if (!empty($lucca_pages)) {
+                wp_update_nav_menu_item($menu_id, 0, array(
+                    'menu-item-title' => $lucca_pages[0]->post_title,
+                    'menu-item-object' => 'page',
+                    'menu-item-object-id' => $lucca_pages[0]->ID,
+                    'menu-item-type' => 'post_type',
+                    'menu-item-status' => 'publish',
+                    'menu-item-position' => 2
+                ));
+            } else {
+                // Create a placeholder if no Lucca page found
+                wp_update_nav_menu_item($menu_id, 0, array(
+                    'menu-item-title' => 'Lucca Products',
+                    'menu-item-url' => '#',
+                    'menu-item-type' => 'custom',
+                    'menu-item-status' => 'publish',
+                    'menu-item-position' => 2
+                ));
+            }
+            
+            // Assign menu to primary location
+            $locations = get_theme_mod('nav_menu_locations');
+            if (!$locations) {
+                $locations = array();
+            }
+            $locations['primary'] = $menu_id;
+            set_theme_mod('nav_menu_locations', $locations);
+            
+            // Store that we created the menu
+            update_option('twentytwentyfive_child_menu_created', true);
+        }
+    }
+}
+add_action('wp_loaded', 'twentytwentyfive_child_create_main_menu');
+
+// Add admin notice to create menu manually if needed
+function twentytwentyfive_child_menu_admin_notice() {
+    $menu_exists = wp_get_nav_menu_object('Main Menu');
+    $menu_created = get_option('twentytwentyfive_child_menu_created');
+    
+    if (!$menu_exists && !$menu_created && current_user_can('manage_options')) {
+        echo '<div class="notice notice-info is-dismissible">';
+        echo '<p><strong>Lucca Gourmet Theme:</strong> Your navigation menu needs to be set up. ';
+        echo '<a href="' . admin_url('nav-menus.php') . '">Create a menu</a> and assign it to the "Primary Menu" location, or ';
+        echo '<a href="' . add_query_arg('create_lucca_menu', '1') . '">click here to create it automatically</a>.</p>';
+        echo '</div>';
+    }
+}
+add_action('admin_notices', 'twentytwentyfive_child_menu_admin_notice');
+
+// Handle manual menu creation
+function twentytwentyfive_child_handle_manual_menu_creation() {
+    if (isset($_GET['create_lucca_menu']) && current_user_can('manage_options')) {
+        twentytwentyfive_child_create_main_menu();
+        wp_redirect(admin_url('nav-menus.php'));
+        exit;
+    }
+}
+add_action('admin_init', 'twentytwentyfive_child_handle_manual_menu_creation');
+
+// Add Tailwind CSS support for Links page
+function twentytwentyfive_child_enqueue_tailwind() {
+    // Only load on the Links page or pages using the Links template
+    if (is_page_template('page-links.php') || is_page('links')) {
+        wp_enqueue_style(
+            'tailwind-css',
+            get_stylesheet_directory_uri() . '/dist/tailwind.css',
+            array(),
+            filemtime(get_stylesheet_directory() . '/dist/tailwind.css')
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_tailwind');
+
+// Add Lucca Links page options
+function twentytwentyfive_child_add_links_options() {
+    // Business Information
+    add_option('lucca_business_name', 'Lucca Almacen');
+    add_option('lucca_description', 'Almacen gourmet, atención personalizada y sabores únicos para cada ocasión');
+    add_option('lucca_address', 'Sánchez de Bustamante 1605, C1425DUG Cdad. Autónoma de Buenos Aires, Argentina');
+    
+    // Contact Information
+    add_option('lucca_phone', '');
+    add_option('lucca_email', '');
+    add_option('lucca_instagram_url', '#');
+    
+    // Images
+    add_option('lucca_cover_image', 'https://readdy.ai/api/search-image?query=modern%20minimalist%20store%20interior%20with%20elegant%20displays%2C%20soft%20ambient%20lighting%2C%20luxury%20retail%20environment%2C%20wide%20angle%20view&width=800&height=400&seq=123&orientation=landscape');
+    
+    // Links
+    add_option('lucca_google_search_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet');
+    add_option('lucca_maps_url', 'https://maps.app.goo.gl/9JetrBEhdMCnobCU7');
+    add_option('lucca_reviews_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet#lrd=0x95bccb001ce7c661:0x8a621e23e9f455d,1,,,');
+    add_option('lucca_review_url', 'https://g.page/r/CV1Fnz7iIaYIEAI/review');
+}
+add_action('after_setup_theme', 'twentytwentyfive_child_add_links_options');
+
+// Add admin menu for Links page settings
+function twentytwentyfive_child_add_admin_menu() {
+    add_options_page(
+        'Lucca Links Settings',
+        'Lucca Links',
+        'manage_options',
+        'lucca-links-settings',
+        'twentytwentyfive_child_links_settings_page'
+    );
+}
+add_action('admin_menu', 'twentytwentyfive_child_add_admin_menu');
+
+// Links settings page
+function twentytwentyfive_child_links_settings_page() {
+    if (isset($_POST['submit'])) {
+        update_option('lucca_business_name', sanitize_text_field($_POST['lucca_business_name']));
+        update_option('lucca_description', sanitize_textarea_field($_POST['lucca_description']));
+        update_option('lucca_address', sanitize_textarea_field($_POST['lucca_address']));
+        update_option('lucca_phone', sanitize_text_field($_POST['lucca_phone']));
+        update_option('lucca_email', sanitize_email($_POST['lucca_email']));
+        update_option('lucca_instagram_url', esc_url_raw($_POST['lucca_instagram_url']));
+        update_option('lucca_cover_image', esc_url_raw($_POST['lucca_cover_image']));
+        update_option('lucca_google_search_url', esc_url_raw($_POST['lucca_google_search_url']));
+        update_option('lucca_maps_url', esc_url_raw($_POST['lucca_maps_url']));
+        update_option('lucca_reviews_url', esc_url_raw($_POST['lucca_reviews_url']));
+        update_option('lucca_review_url', esc_url_raw($_POST['lucca_review_url']));
+        
+        echo '<div class="notice notice-success"><p>Settings saved!</p></div>';
+    }
+    
+    $business_name = get_option('lucca_business_name');
+    $description = get_option('lucca_description');
+    $address = get_option('lucca_address');
+    $phone = get_option('lucca_phone');
+    $email = get_option('lucca_email');
+    $instagram_url = get_option('lucca_instagram_url');
+    $cover_image = get_option('lucca_cover_image');
+    $google_search_url = get_option('lucca_google_search_url');
+    $maps_url = get_option('lucca_maps_url');
+    $reviews_url = get_option('lucca_reviews_url');
+    $review_url = get_option('lucca_review_url');
+    ?>
+    
+    <div class="wrap">
+        <h1>Lucca Links Page Settings</h1>
+        <form method="post" action="">
+            <table class="form-table">
+                <tr>
+                    <th scope="row">Business Name</th>
+                    <td><input type="text" name="lucca_business_name" value="<?php echo esc_attr($business_name); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Description</th>
+                    <td><textarea name="lucca_description" rows="3" cols="50"><?php echo esc_textarea($description); ?></textarea></td>
+                </tr>
+                <tr>
+                    <th scope="row">Address</th>
+                    <td><textarea name="lucca_address" rows="2" cols="50"><?php echo esc_textarea($address); ?></textarea></td>
+                </tr>
+                <tr>
+                    <th scope="row">Phone</th>
+                    <td><input type="text" name="lucca_phone" value="<?php echo esc_attr($phone); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Email</th>
+                    <td><input type="email" name="lucca_email" value="<?php echo esc_attr($email); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Instagram URL</th>
+                    <td><input type="url" name="lucca_instagram_url" value="<?php echo esc_attr($instagram_url); ?>" class="regular-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Cover Image URL</th>
+                    <td><input type="url" name="lucca_cover_image" value="<?php echo esc_attr($cover_image); ?>" class="large-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Google Search URL</th>
+                    <td><input type="url" name="lucca_google_search_url" value="<?php echo esc_attr($google_search_url); ?>" class="large-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Maps URL</th>
+                    <td><input type="url" name="lucca_maps_url" value="<?php echo esc_attr($maps_url); ?>" class="large-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Reviews URL</th>
+                    <td><input type="url" name="lucca_reviews_url" value="<?php echo esc_attr($reviews_url); ?>" class="large-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Leave Review URL</th>
+                    <td><input type="url" name="lucca_review_url" value="<?php echo esc_attr($review_url); ?>" class="large-text" /></td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+    </div>
+    <?php
+}
+
 // AJAX handler for loading products by category
 function lucca_load_products_by_category() {
     // Verify nonce

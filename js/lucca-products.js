@@ -257,6 +257,17 @@ jQuery(document).ready(function($) {
                     if ($('.cart-count').length) {
                         $('.cart-count').text(currentCartCount);
                     }
+                    
+                    // Update navigation cart count
+                    const $navCartCount = $('.lucca-cart-count');
+                    if ($navCartCount.length) {
+                        $navCartCount.text(currentCartCount).attr('data-count', currentCartCount);
+                        if (currentCartCount === 0) {
+                            $navCartCount.hide();
+                        } else {
+                            $navCartCount.show();
+                        }
+                    }
                 } else {
                     alert('Failed to add product to cart: ' + response.data);
                     $button.prop('disabled', false);

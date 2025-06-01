@@ -20,6 +20,26 @@ $main_categories = get_terms(array(
 ));
 ?>
 
+<!-- Navigation Menu -->
+<?php if (has_nav_menu('primary')) : ?>
+    <nav class="lucca-navigation">
+        <?php
+        wp_nav_menu(array(
+            'theme_location' => 'primary',
+            'container' => false,
+            'items_wrap' => '<ul class="lucca-nav-menu">%3$s</ul>',
+            'depth' => 2,
+        ));
+        ?>
+    </nav>
+<?php elseif (current_user_can('edit_theme_options')) : ?>
+    <nav class="lucca-navigation">
+        <div class="lucca-nav-notice">
+            <p>Please set up your navigation menu in <a href="<?php echo admin_url('nav-menus.php'); ?>">Appearance > Menus</a></p>
+        </div>
+    </nav>
+<?php endif; ?>
+
 <div class="lucca-categories-container">
     <header class="woocommerce-products-header">
         <?php if (apply_filters('woocommerce_show_page_title', true)) : ?>

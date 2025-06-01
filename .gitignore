@@ -14,8 +14,11 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node modules (if you add build tools later)
+# Node modules and build files
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Build files
 *.log
@@ -35,3 +38,6 @@ node_modules/
 .sass-cache/
 *.css.map
 *.scss.map
+
+# Keep compiled CSS
+!dist/tailwind.css
