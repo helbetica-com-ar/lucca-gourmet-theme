@@ -3,6 +3,29 @@
  * Twenty Twenty-Five Child Theme Functions
  */
 
+// Add minimal CORS headers for Canva iframe embedding
+function twentytwentyfive_child_add_cors_headers() {
+    // Allow iframe embedding with minimal restrictions
+    header('X-Frame-Options: ALLOWALL');
+}
+
+// Apply CORS headers on Menu pages
+function twentytwentyfive_child_maybe_add_cors() {
+    if (is_page_template('page-menu-tablas.php') || is_page_template('page-menu-sandwiches.php')) {
+        twentytwentyfive_child_add_cors_headers();
+    }
+}
+add_action('template_redirect', 'twentytwentyfive_child_maybe_add_cors');
+
+// Remove X-Frame-Options for Menu pages specifically
+function twentytwentyfive_child_remove_frame_options() {
+    if (is_page_template('page-menu-tablas.php') || is_page_template('page-menu-sandwiches.php')) {
+        remove_action('login_init', 'send_frame_options_header');
+        remove_action('admin_init', 'send_frame_options_header');
+    }
+}
+add_action('init', 'twentytwentyfive_child_remove_frame_options');
+
 // Enqueue parent and child theme styles
 function twentytwentyfive_child_enqueue_styles() {
     $parent_style = 'twentytwentyfive-style';

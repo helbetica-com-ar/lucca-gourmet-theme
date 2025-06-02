@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Menu Tablas
+ * Template Name: Menu Sandwiches
  * 
  * @package Twenty Twenty-Five Child
  */
@@ -12,7 +12,7 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LUCCA Tablas</title>
+    <title>LUCCA Sandwiches</title>
     
     <!-- Minimal CORS policy for iframe support -->
     <meta http-equiv="X-Frame-Options" content="ALLOWALL">
@@ -111,12 +111,12 @@
 <div class="canva-fullscreen-container" id="canvaContainer">
     <div class="canva-embed-loading" id="loadingIndicator">
         <div class="spinner"></div>
-        <p>Cargando menú...</p>
+        <p>Cargando menú de sandwiches...</p>
     </div>
     <iframe 
         id="canvaEmbed"
         class="canva-iframe"
-        src="https://www.canva.com/design/DAGlgl1ij9M/CRfLHBp21S1WbZyim-xpEg/view?embed"
+        src="https://www.canva.com/design/DAGlg133crA/TUyZNu-zzAG3OhMI4B9f0g/view?embed"
         allowfullscreen="allowfullscreen"
         allow="fullscreen"
     ></iframe>
