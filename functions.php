@@ -234,28 +234,44 @@ function twentytwentyfive_child_enqueue_tailwind() {
 }
 add_action('wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_tailwind');
 
-// Add Lucca Links page options
-function twentytwentyfive_child_add_links_options() {
-    // Business Information
-    add_option('lucca_business_name', 'Lucca Almacen');
-    add_option('lucca_description', 'Almacen gourmet, atención personalizada y sabores únicos para cada ocasión');
-    add_option('lucca_address', 'Sánchez de Bustamante 1605, C1425DUG Cdad. Autónoma de Buenos Aires, Argentina');
+/**
+ * Obtiene información del negocio - Datos fijos para mejor rendimiento
+ * Para reutilizar en otros clientes, simplemente cambiar los valores de retorno
+ * 
+ * @param string $key Clave de la información solicitada
+ * @return string Valor correspondiente a la clave
+ */
+function get_business_info($key = '') {
+    $business_data = array(
+        // Información básica del negocio
+        'business_name' => 'Lucca Almacen',
+        'description' => 'Almacen gourmet, atención personalizada y sabores únicos para cada ocasión',
+        'address' => 'Sánchez de Bustamante 1605, C1425DUG Cdad. Autónoma de Buenos Aires, Argentina',
+        
+        // Información de contacto
+        'phone' => '+541141798537',
+        'email' => 'pedidos@luccagourmet.com.ar',
+        'instagram_url' => '#',
+        
+        // URLs de servicios
+        'google_search_url' => 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet',
+        'maps_url' => 'https://maps.app.goo.gl/9JetrBEhdMCnobCU7',
+        'reviews_url' => 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet#lrd=0x95bccb001ce7c661:0x8a621e23e9f455d,1,,,',
+        'review_url' => 'https://g.page/r/CV1Fnz7iIaYIEAI/review',
+        
+        // URLs de imágenes
+        'logo_image' => home_url('/wp-content/uploads/2025/06/Lucca-insideQR.png'),
+        'cover_image' => home_url('/wp-content/uploads/2025/06/Lucca-apoya-vasos-cover.webp')
+    );
     
-    // Contact Information
-    add_option('lucca_phone', '');
-    add_option('lucca_email', '');
-    add_option('lucca_instagram_url', '#');
+    // Si se solicita una clave específica
+    if (!empty($key)) {
+        return isset($business_data[$key]) ? $business_data[$key] : '';
+    }
     
-    // Images
-    add_option('lucca_cover_image', 'https://readdy.ai/api/search-image?query=modern%20minimalist%20store%20interior%20with%20elegant%20displays%2C%20soft%20ambient%20lighting%2C%20luxury%20retail%20environment%2C%20wide%20angle%20view&width=800&height=400&seq=123&orientation=landscape');
-    
-    // Links
-    add_option('lucca_google_search_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet');
-    add_option('lucca_maps_url', 'https://maps.app.goo.gl/9JetrBEhdMCnobCU7');
-    add_option('lucca_reviews_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet#lrd=0x95bccb001ce7c661:0x8a621e23e9f455d,1,,,');
-    add_option('lucca_review_url', 'https://g.page/r/CV1Fnz7iIaYIEAI/review');
+    // Si no se especifica clave, retornar todo el array
+    return $business_data;
 }
-add_action('after_setup_theme', 'twentytwentyfive_child_add_links_options');
 
 // Add admin menu for Links page settings
 function twentytwentyfive_child_add_admin_menu() {

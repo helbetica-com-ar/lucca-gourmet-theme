@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php wp_title('|', true, 'right'); ?><?php bloginfo('name'); ?></title>
+    <title>LUCCA Almacén</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,15 +28,7 @@ defined('ABSPATH') || exit;
     <!-- Top Navigation -->
     <div class="fixed top-0 left-0 right-0 bg-lucca-dark/95 backdrop-blur-sm z-50 py-3 border-b border-gray-800">
         <div class="flex justify-center space-x-6">
-            <a href="https://maps.app.goo.gl/99hCh5h3UfWT1duE9" target="_blank"
-                class="w-10 h-10 flex items-center justify-center rounded-lg bg-lucca-gray text-white hover:text-lucca-light-gray transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <pin cx="12" cy="12" r="3"></pin>
-                    <path d="M12 1a9 9 0 0 0-9 9c0 4.5 9 13 9 13s9-8.5 9-13a9 9 0 0 0-9-9z"></path>
-                </svg>
-            </a>
-            <a href="<?php echo esc_url(get_option('lucca_instagram_url', '#')); ?>"
+            <a href="<?php echo esc_url(get_business_info('instagram_url')); ?>"
                 class="w-10 h-10 flex items-center justify-center rounded-lg bg-lucca-gray text-white hover:text-lucca-light-gray transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,14 +37,22 @@ defined('ABSPATH') || exit;
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
             </a>
-            <a href="tel:<?php echo esc_attr(get_option('lucca_phone', '')); ?>"
+            <a href="<?php echo esc_url(get_business_info('maps_url')); ?>" target="_blank"
+                class="w-10 h-10 flex items-center justify-center rounded-lg bg-lucca-gray text-white hover:text-lucca-light-gray transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <pin cx="12" cy="12" r="3"></pin>
+                    <path d="M12 1a9 9 0 0 0-9 9c0 4.5 9 13 9 13s9-8.5 9-13a9 9 0 0 0-9-9z"></path>
+                </svg>
+            </a>
+            <a href="tel:<?php echo esc_attr(get_business_info('phone')); ?>"
                 class="w-10 h-10 flex items-center justify-center rounded-lg bg-lucca-gray text-white hover:text-lucca-light-gray transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
             </a>
-            <a href="mailto:<?php echo esc_attr(get_option('lucca_email', '')); ?>"
+            <a href="mailto:<?php echo esc_attr(get_business_info('email')); ?>"
                 class="w-10 h-10 flex items-center justify-center rounded-lg bg-lucca-gray text-white hover:text-lucca-light-gray transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -63,24 +63,24 @@ defined('ABSPATH') || exit;
         </div>
     </div>
 
-    <div class="w-full max-w-[1000px] mx-auto px-4 py-12 flex flex-col items-center mt-16">
+    <div class="links-page-cover w-full mx-auto px-4 py-12 flex flex-col items-center mt-16" style="background-image: url('<?php echo esc_url(get_business_info('cover_image')); ?>'); background-position: center top; background-size: cover; background-repeat: no-repeat;">
         <!-- Profile Section -->
-        <div class="flex flex-col items-center mb-8 w-full">
-            <div class="w-full h-48 rounded-lg overflow-hidden border border-gray-700 shadow-lg mb-4">
+        <div class="flex flex-col items-center mb-8 max-w-[600px] mx-auto p-6 rounded-lg border border-gray-700 shadow-lg mt-5" style="background-color: rgba(0, 0, 0, 0.8);">
+            <div class="w-full h-48 overflow-visible mb-4 flex items-center justify-center">
                 <?php 
-                $cover_image = get_option('lucca_cover_image', 'https://readdy.ai/api/search-image?query=modern%20minimalist%20store%20interior%20with%20elegant%20displays%2C%20soft%20ambient%20lighting%2C%20luxury%20retail%20environment%2C%20wide%20angle%20view&width=800&height=400&seq=123&orientation=landscape');
+                $logo_image = get_business_info('logo_image');
                 ?>
-                <img src="<?php echo esc_url($cover_image); ?>"
-                    alt="<?php echo esc_attr(get_bloginfo('name')); ?> Cover" 
-                    class="w-full h-full object-cover object-center">
+                <img src="<?php echo esc_url($logo_image); ?>"
+                    alt="<?php echo esc_attr(get_bloginfo('name')); ?> Logo" 
+                    class="max-h-full max-w-full object-contain">
             </div>
-            <h1 class="text-2xl font-bold text-white mb-1"><?php echo esc_html(get_option('lucca_business_name', get_bloginfo('name'))); ?></h1>
-            <p class="text-gray-400 text-center max-w-xs mb-2"><?php echo esc_html(get_option('lucca_description', 'Almacen gourmet, atención personalizada y sabores únicos para cada ocasión')); ?></p>
+            <h1 class="text-2xl font-bold text-white mb-1"><?php echo esc_html(get_business_info('business_name')); ?></h1>
+            <p class="text-gray-400 text-center max-w-xs mb-2"><?php echo esc_html(get_business_info('description')); ?></p>
         </div>
     </div>
 
     <!-- Wrapper -->
-    <div class="wrapper w-full px-4">
+    <div class="wrapper w-full p-4">
         <!-- Featured Categories -->
         <div class="w-full p-4 bg-lucca-gray rounded-button border border-gray-700 shadow-sm mb-8">
             <p class="font-medium text-white text-center mb-3">MENU</p>
@@ -93,6 +93,7 @@ defined('ABSPATH') || exit;
                     'parent' => 0
                 ));
 
+                // Default category images fallback
                 $category_images = array(
                     'tabla' => 'https://readdy.ai/api/search-image?query=premium%20organic%20skincare%20product%20on%20dark%20elegant%20background%2C%20minimalist%20packaging%2C%20high%20quality%20product%20photography%2C%20dramatic%20lighting&width=400&height=300&seq=124&orientation=landscape',
                     'sandwich' => 'https://readdy.ai/api/search-image?query=premium%20organic%20hair%20care%20product%20on%20dark%20elegant%20background%2C%20minimalist%20packaging%2C%20high%20quality%20product%20photography%2C%20dramatic%20lighting&width=400&height=300&seq=125&orientation=landscape'
@@ -100,8 +101,23 @@ defined('ABSPATH') || exit;
 
                 if (!empty($categories)) :
                     foreach ($categories as $category) :
-                        $category_url = get_term_link($category);
-                        $category_image = isset($category_images[strtolower($category->slug)]) ? $category_images[strtolower($category->slug)] : $category_images['sandwich'];
+                        // Check if category slug matches our menu pages
+                        if ($category->slug === 'tabla' || $category->slug === 'tablas') {
+                            $category_url = home_url('/menu-tablas/');
+                        } elseif ($category->slug === 'sandwich' || $category->slug === 'sandwiches') {
+                            $category_url = home_url('/menu-sandwiches/');
+                        } else {
+                            $category_url = get_term_link($category);
+                        }
+                        
+                        // Get WooCommerce category image
+                        $thumbnail_id = get_term_meta($category->term_id, 'thumbnail_id', true);
+                        if ($thumbnail_id) {
+                            $category_image = wp_get_attachment_url($thumbnail_id);
+                        } else {
+                            // Fallback to default images
+                            $category_image = isset($category_images[strtolower($category->slug)]) ? $category_images[strtolower($category->slug)] : $category_images['sandwich'];
+                        }
                 ?>
                 <a href="<?php echo esc_url($category_url); ?>" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
                     <div class="w-full h-32 rounded-lg mb-2 overflow-hidden">
@@ -116,14 +132,14 @@ defined('ABSPATH') || exit;
                 else : 
                 ?>
                 <!-- Fallback categories if no WooCommerce categories exist -->
-                <a href="#" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+                <a href="<?php echo esc_url(home_url('/menu-tablas/')); ?>" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
                     <div class="w-full h-32 rounded-lg mb-2 overflow-hidden">
                         <img src="<?php echo esc_url($category_images['tabla']); ?>"
                             alt="Tablas" class="w-full h-full object-cover object-center">
                     </div>
                     <p class="text-sm font-medium text-white">TABLAS</p>
                 </a>
-                <a href="#" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+                <a href="<?php echo esc_url(home_url('/menu-sandwiches/')); ?>" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
                     <div class="w-full h-32 rounded-lg mb-2 overflow-hidden">
                         <img src="<?php echo esc_url($category_images['sandwich']); ?>"
                             alt="Sandwiches" class="w-full h-full object-cover object-center">
@@ -131,9 +147,24 @@ defined('ABSPATH') || exit;
                     <p class="text-sm font-medium text-white">SANDWICHES</p>
                 </a>
                 <?php endif; ?>
+                <?php 
+                // Get vinos category if it exists
+                $vinos_category = get_term_by('slug', 'vinos', 'product_cat');
+                $vinos_image = '';
+                if ($vinos_category) {
+                    $vinos_thumbnail_id = get_term_meta($vinos_category->term_id, 'thumbnail_id', true);
+                    if ($vinos_thumbnail_id) {
+                        $vinos_image = wp_get_attachment_url($vinos_thumbnail_id);
+                    }
+                }
+                // Use fallback if no image found
+                if (empty($vinos_image)) {
+                    $vinos_image = isset($category_images['vinos']) ? $category_images['vinos'] : $category_images['sandwich'];
+                }
+                ?>
                 <a href="#" class="flex-1 block bg-gray-800 rounded-lg p-3 hover:bg-gray-700 border border-gray-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
                     <div class="w-full h-32 rounded-lg mb-2 overflow-hidden">
-                        <img src="<?php echo esc_url($category_images['sandwich']); ?>"
+                        <img src="<?php echo esc_url($vinos_image); ?>"
                             alt="Vinos" class="w-full h-full object-cover object-center">
                     </div>
                     <p class="text-sm font-medium text-white">VINOS</p>
@@ -145,7 +176,7 @@ defined('ABSPATH') || exit;
         <!-- Links Section -->
         <div class="w-full space-y-4">
             <a target="_blank"
-                href="<?php echo esc_url(get_option('lucca_google_search_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet')); ?>"
+                href="<?php echo esc_url(get_business_info('google_search_url')); ?>"
                 class="link-button w-full flex items-center p-4 bg-lucca-gray rounded-button border border-gray-700 shadow-sm hover:bg-gray-700 hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap justify-center transition-all duration-200"
                 style="padding-left: 50px;">
                 <div class="w-6 h-6 flex items-center justify-center mr-1">
@@ -163,28 +194,19 @@ defined('ABSPATH') || exit;
                 <span class="font-medium text-white">LUCCA EN GOOGLE</span>
             </a>
             
-            <a target="_blank" href="<?php echo esc_url(get_option('lucca_maps_url', 'https://maps.app.goo.gl/9JetrBEhdMCnobCU7')); ?>"
+            <a target="_blank" href="<?php echo esc_url(get_business_info('maps_url')); ?>"
                 class="link-button w-full flex items-center p-4 bg-lucca-gray rounded-button border border-gray-700 shadow-sm hover:bg-gray-700 hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap justify-center transition-all duration-200">
-                <div class="w-6 h-6 flex items-center justify-center mr-3">
-                    <i class="ri-map-pin-2-fill"></i>
-                </div>
                 <span class="font-medium text-white">📌 MAPA</span>
             </a>
             
             <a target="_blank"
-                href="<?php echo esc_url(get_option('lucca_reviews_url', 'https://www.google.com/search?hl=en&q=Lucca%20-%20Almac%C3%A9n%20de%20vinos%2C%20picadas%20y%20delicias%20Gourmet#lrd=0x95bccb001ce7c661:0x8a621e23e9f455d,1,,,,')); ?>"
+                href="<?php echo esc_url(get_business_info('reviews_url')); ?>"
                 class="link-button w-full flex items-center p-4 bg-lucca-gray rounded-button border border-gray-700 shadow-sm hover:bg-gray-700 hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap justify-center transition-all duration-200">
-                <div class="w-6 h-6 flex items-center justify-center mr-3">
-                    <i class="ri-map-pin-2-fill"></i>
-                </div>
                 <span class="font-medium text-white">💬 RESEÑAS</span>
             </a>
             
-            <a target="_blank" href="<?php echo esc_url(get_option('lucca_review_url', 'https://g.page/r/CV1Fnz7iIaYIEAI/review')); ?>"
+            <a target="_blank" href="<?php echo esc_url(get_business_info('review_url')); ?>"
                 class="link-button w-full flex items-center p-4 bg-lucca-gray rounded-button border border-gray-700 shadow-sm hover:bg-gray-700 hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap justify-center transition-all duration-200">
-                <div class="w-6 h-6 flex items-center justify-center mr-3">
-                    <i class="ri-star-fill"></i>
-                </div>
                 <span class="font-medium text-white">DEJANOS UNAS ... ⭐⭐⭐⭐⭐</span>
             </a>
         </div>
@@ -192,8 +214,8 @@ defined('ABSPATH') || exit;
 
     <!-- Footer -->
     <footer class="w-full mt-12 text-center text-gray-400 text-sm pb-12">
-        <p>© <?php echo date('Y'); ?> <?php echo esc_html(get_option('lucca_business_name', get_bloginfo('name'))); ?>. All rights reserved.</p>
-        <p class="mt-2"><?php echo esc_html(get_option('lucca_address', 'Sánchez de Bustamante 1605, C1425DUG Cdad. Autónoma de Buenos Aires, Argentina')); ?></p>
+        <p>© <?php echo date('Y'); ?> <?php echo esc_html(get_business_info('business_name')); ?>. All rights reserved.</p>
+        <p class="mt-2"><?php echo esc_html(get_business_info('address')); ?></p>
     </footer>
 
     <?php wp_footer(); ?>
