@@ -77,8 +77,8 @@ add_action('wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_styles');
 // Register navigation menu
 function twentytwentyfive_child_register_menus() {
     register_nav_menus(array(
-        'primary' => __('Primary Menu', 'twentytwentyfive-child'),
-        'lucca-menu' => __('Lucca Menu', 'twentytwentyfive-child'),
+        'primary' => __('Primary Menu', 'lucca-gourmet-theme'),
+        'lucca-menu' => __('Lucca Menu', 'lucca-gourmet-theme'),
     ));
 }
 add_action('init', 'twentytwentyfive_child_register_menus');
@@ -456,7 +456,7 @@ function lucca_load_products_by_category() {
         
         echo '</div>';
     } else {
-        echo '<p>' . __('No products found in this category.', 'twentytwentyfive-child') . '</p>';
+        echo '<p>' . __('No products found in this category.', 'lucca-gourmet-theme') . '</p>';
     }
     
     wp_reset_postdata();
@@ -497,14 +497,14 @@ function lucca_ajax_add_to_cart() {
         }
         
         wp_send_json_success(array(
-            'message' => __('Product added to cart!', 'twentytwentyfive-child'),
+            'message' => __('Product added to cart!', 'lucca-gourmet-theme'),
             'cart_count' => WC()->cart->get_cart_contents_count(),
             'product_quantity' => $quantity_in_cart,
             'product_id' => $product_id,
             'variation_id' => $variation_id
         ));
     } else {
-        wp_send_json_error(__('Failed to add product to cart.', 'twentytwentyfive-child'));
+        wp_send_json_error(__('Failed to add product to cart.', 'lucca-gourmet-theme'));
     }
 }
 add_action('wp_ajax_lucca_add_to_cart', 'lucca_ajax_add_to_cart');
