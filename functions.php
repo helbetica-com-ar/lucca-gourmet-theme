@@ -242,7 +242,8 @@ add_action('wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_tailwind');
  * @return string Valor correspondiente a la clave
  */
 function get_business_info($key = '') {
-    $business_data = array(
+    // Default values
+    $defaults = array(
         // Información básica del negocio
         'business_name' => 'Lucca Almacen',
         'description' => 'Almacen gourmet, atención personalizada y sabores únicos para cada ocasión',
@@ -263,6 +264,13 @@ function get_business_info($key = '') {
         'logo_image' => home_url('/wp-content/uploads/2025/06/Lucca-insideQR.png'),
         'cover_image' => home_url('/wp-content/uploads/2025/06/Lucca-apoya-vasos-cover.webp')
     );
+    
+    // Build business data from options, falling back to defaults
+    $business_data = array();
+    foreach ($defaults as $data_key => $default_value) {
+        $option_value = get_option('lucca_' . $data_key);
+        $business_data[$data_key] = !empty($option_value) ? $option_value : $default_value;
+    }
     
     // Si se solicita una clave específica
     if (!empty($key)) {
@@ -663,3 +671,107 @@ function lucca_get_all_products_json() {
     
     return $products_data;
 }
+
+// Enable SVG upload support
+function lucca_enable_svg_upload($mimes) {
+    // Add SVG mime type
+    $mimes['svg'] = 'image/svg+xml';
+    $mimes['svgz'] = 'image/svg+xml';
+    return $mimes;
+}
+add_filter('upload_mimes', 'lucca_enable_svg_upload');
+
+// Fix SVG display in Media Library
+function lucca_fix_svg_thumb_display() {
+    echo '<style>
+        .attachment-266x266, .thumbnail img {
+            width: 100% !important;
+            height: auto !important;
+        }
+        td.media-icon img[src$=".svg"], 
+        img[src$=".svg"].attachment-post-thumbnail {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 100px;
+        }
+    </style>';
+}
+add_action('admin_head', 'lucca_fix_svg_thumb_display');
+
+// Sanitize SVG uploads for security
+function lucca_sanitize_svg($file) {
+    // Check if file is SVG
+    if ($file['type'] === 'image/svg+xml') {
+        // Read the file content
+        $file_content = file_get_contents($file['tmp_name']);
+        
+        // Basic security: Check for potentially harmful elements
+        $harmful_elements = array(
+            '<script', 'onclick', 'onload', 'onerror', 'javascript:',
+            '<iframe', '<embed', '<object', '<link', '<meta', '<import'
+        );
+        
+        foreach ($harmful_elements as $element) {
+            if (stripos($file_content, $element) !== false) {
+                $file['error'] = 'Sorry, this SVG file contains potentially harmful code and cannot be uploaded.';
+                return $file;
+            }
+        }
+    }
+    
+    return $file;
+}
+add_filter('wp_handle_upload_prefilter', 'lucca_sanitize_svg');
+
+// Enable SVG preview in Media Library grid view
+function lucca_svg_media_thumbnails($response, $attachment, $meta) {
+    if ($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && class_exists('SimpleXMLElement')) {
+        try {
+            $path = get_attached_file($attachment->ID);
+            if (@file_exists($path)) {
+                $svg = new SimpleXMLElement(@file_get_contents($path));
+                $src = $response['url'];
+                $width = (int) $svg['width'];
+                $height = (int) $svg['height'];
+                
+                // Fallback to viewBox if width/height not set
+                if (!$width || !$height) {
+                    $viewbox = (string) $svg['viewBox'];
+                    if ($viewbox) {
+                        $viewbox = explode(' ', $viewbox);
+                        $width = (int) $viewbox[2];
+                        $height = (int) $viewbox[3];
+                    }
+                }
+                
+                // Default dimensions if still not found
+                if (!$width || !$height) {
+                    $width = 150;
+                    $height = 150;
+                }
+                
+                $response['sizes'] = array(
+                    'full' => array(
+                        'url' => $src,
+                        'width' => $width,
+                        'height' => $height,
+                        'orientation' => $width >= $height ? 'landscape' : 'portrait'
+                    )
+                );
+            }
+        } catch (Exception $e) {
+            // If SVG parsing fails, provide default dimensions
+            $response['sizes'] = array(
+                'full' => array(
+                    'url' => $response['url'],
+                    'width' => 150,
+                    'height' => 150,
+                    'orientation' => 'landscape'
+                )
+            );
+        }
+    }
+    
+    return $response;
+}
+add_filter('wp_prepare_attachment_for_js', 'lucca_svg_media_thumbnails', 10, 3);
