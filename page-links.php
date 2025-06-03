@@ -12,7 +12,24 @@ defined('ABSPATH') || exit;
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUCCA Almacén</title>
+    <title>LUCCA Almacén Gourmet</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="LUCCA Almacén - Menu y Links" />
+    <meta property="og:description" content="Encuentra todos nuestros enlaces de contacto, ubicación y redes sociales. Almacén gourmet con atención personalizada y sabores únicos." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<?php echo esc_url(get_permalink()); ?>" />
+    <meta property="og:image" content="https://luccagourmet.local/wp-content/uploads/2025/06/Lucca-Home.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Lucca Gourmet" />
+    <meta property="og:locale" content="es_ES" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LUCCA Almacén - Enlaces y Contacto" />
+    <meta name="twitter:description" content="Encuentra todos nuestros enlaces de contacto, ubicación y redes sociales. Almacén gourmet con atención personalizada y sabores únicos." />
+    <meta name="twitter:image" content="https://luccagourmet.local/wp-content/uploads/2025/06/Lucca-Home.jpg" />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

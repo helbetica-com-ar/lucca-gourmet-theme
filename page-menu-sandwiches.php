@@ -12,7 +12,24 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LUCCA Sandwiches</title>
+    <title>LUCCA Sandwiches - Menú</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="LUCCA Sandwiches - Menú Gourmet" />
+    <meta property="og:description" content="Descubre nuestra selección de sandwiches gourmet artesanales. Ingredientes frescos y combinaciones únicas para todos los gustos." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<?php echo esc_url(get_permalink()); ?>" />
+    <meta property="og:image" content="https://luccagourmet.com.ar/wp-content/uploads/2025/06/Luccagourmet.com_.ar-Thumb-Sandwiches.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Lucca Gourmet" />
+    <meta property="og:locale" content="es_ES" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LUCCA Sandwiches - Menú Gourmet" />
+    <meta name="twitter:description" content="Descubre nuestra selección de sandwiches gourmet artesanales. Ingredientes frescos y combinaciones únicas." />
+    <meta name="twitter:image" content="https://luccagourmet.com.ar/wp-content/uploads/2025/06/Luccagourmet.com_.ar-Thumb-Sandwiches.png" />
     
     <!-- Minimal CORS policy for iframe support -->
     <meta http-equiv="X-Frame-Options" content="ALLOWALL">

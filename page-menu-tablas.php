@@ -12,7 +12,24 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LUCCA Tablas</title>
+    <title>LUCCA Tablas - Menú</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="LUCCA Tablas - Picadas Gourmet" />
+    <meta property="og:description" content="Explora nuestras tablas gourmet con selección premium de quesos, fiambres y delicatessen. Perfectas para compartir en cualquier ocasión." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<?php echo esc_url(get_permalink()); ?>" />
+    <meta property="og:image" content="https://luccagourmet.com.ar/wp-content/uploads/2025/05/tabla-cover.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Lucca Gourmet" />
+    <meta property="og:locale" content="es_ES" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LUCCA Tablas - Picadas Gourmet" />
+    <meta name="twitter:description" content="Explora nuestras tablas gourmet con selección premium de quesos, fiambres y delicatessen. Perfectas para compartir." />
+    <meta name="twitter:image" content="https://luccagourmet.com.ar/wp-content/uploads/2025/05/tabla-cover.png" />
     
     <!-- Minimal CORS policy for iframe support -->
     <meta http-equiv="X-Frame-Options" content="ALLOWALL">
