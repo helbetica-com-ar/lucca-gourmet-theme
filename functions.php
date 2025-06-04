@@ -378,7 +378,7 @@ function twentytwentyfive_child_links_settings_page() {
                     <th scope="row">Sitemap Links</th>
                     <td>
                         <textarea name="lucca_sitemap_links" rows="10" cols="50" class="large-text code"><?php echo esc_textarea($sitemap_links); ?></textarea>
-                        <p class="description">Enter one URL per line. These links will be included in the sitemap for the site.</p>
+                        <p class="description">Enter one URL per line. These links will be included in the sitemap for the site. <a href="<?php echo home_url('/lucca-sitemap.xml'); ?>" target="_blank">View sitemap</a></p>
                     </td>
                 </tr>
             </table>
