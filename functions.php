@@ -307,6 +307,7 @@ function twentytwentyfive_child_links_settings_page() {
         update_option('lucca_maps_url', esc_url_raw($_POST['lucca_maps_url']));
         update_option('lucca_reviews_url', esc_url_raw($_POST['lucca_reviews_url']));
         update_option('lucca_review_url', esc_url_raw($_POST['lucca_review_url']));
+        update_option('lucca_sitemap_links', sanitize_textarea_field($_POST['lucca_sitemap_links']));
         
         echo '<div class="notice notice-success"><p>Settings saved!</p></div>';
     }
@@ -322,6 +323,7 @@ function twentytwentyfive_child_links_settings_page() {
     $maps_url = get_option('lucca_maps_url');
     $reviews_url = get_option('lucca_reviews_url');
     $review_url = get_option('lucca_review_url');
+    $sitemap_links = get_option('lucca_sitemap_links');
     ?>
     
     <div class="wrap">
@@ -371,6 +373,13 @@ function twentytwentyfive_child_links_settings_page() {
                 <tr>
                     <th scope="row">Leave Review URL</th>
                     <td><input type="url" name="lucca_review_url" value="<?php echo esc_attr($review_url); ?>" class="large-text" /></td>
+                </tr>
+                <tr>
+                    <th scope="row">Sitemap Links</th>
+                    <td>
+                        <textarea name="lucca_sitemap_links" rows="10" cols="50" class="large-text code"><?php echo esc_textarea($sitemap_links); ?></textarea>
+                        <p class="description">Enter one URL per line. These links will be included in the sitemap for the site.</p>
+                    </td>
                 </tr>
             </table>
             <?php submit_button(); ?>
@@ -775,3 +784,146 @@ function lucca_svg_media_thumbnails($response, $attachment, $meta) {
     return $response;
 }
 add_filter('wp_prepare_attachment_for_js', 'lucca_svg_media_thumbnails', 10, 3);
+
+// Generate custom sitemap from admin-defined links
+function lucca_generate_sitemap() {
+    // Prevent any output before XML
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    
+    // Get the sitemap links from options
+    $sitemap_links = get_option('lucca_sitemap_links', '');
+    
+    // If no custom links, create a basic sitemap with home page
+    if (empty($sitemap_links)) {
+        $urls = array(home_url('/'));
+    } else {
+        // Convert textarea content to array of URLs
+        $urls = array_filter(array_map('trim', explode("\n", $sitemap_links)));
+    }
+    
+    // Set proper content type
+    header('Content-Type: application/xml; charset=utf-8');
+    header('X-Robots-Tag: noindex, follow');
+    
+    // Start XML output
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+    
+    foreach ($urls as $url) {
+        // Validate URL
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            echo "\t<url>\n";
+            echo "\t\t<loc>" . esc_url($url) . "</loc>\n";
+            echo "\t\t<lastmod>" . date('Y-m-d') . "</lastmod>\n";
+            echo "\t\t<changefreq>weekly</changefreq>\n";
+            echo "\t\t<priority>0.8</priority>\n";
+            echo "\t</url>\n";
+        }
+    }
+    
+    echo '</urlset>';
+    exit;
+}
+
+// Add rewrite rule for custom sitemap
+function lucca_sitemap_rewrite_rules() {
+    add_rewrite_rule('^lucca-sitemap\.xml$', 'index.php?lucca_sitemap=1', 'top');
+    
+    // Flush rewrite rules if our option doesn't exist
+    if (!get_option('lucca_sitemap_rules_flushed')) {
+        flush_rewrite_rules();
+        update_option('lucca_sitemap_rules_flushed', true);
+    }
+}
+add_action('init', 'lucca_sitemap_rewrite_rules');
+
+// Add query var for sitemap
+function lucca_sitemap_query_vars($vars) {
+    $vars[] = 'lucca_sitemap';
+    return $vars;
+}
+add_filter('query_vars', 'lucca_sitemap_query_vars');
+
+// Handle sitemap request
+function lucca_handle_sitemap_request() {
+    if (get_query_var('lucca_sitemap')) {
+        lucca_generate_sitemap();
+    }
+}
+add_action('template_redirect', 'lucca_handle_sitemap_request');
+
+// Flush rewrite rules on theme activation
+function lucca_theme_activation() {
+    lucca_sitemap_rewrite_rules();
+    flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'lucca_theme_activation');
+
+// Add manual flush rewrite rules function for debugging
+function lucca_flush_rewrite_rules() {
+    flush_rewrite_rules();
+    delete_option('lucca_sitemap_rules_flushed');
+    wp_die('Rewrite rules have been flushed. <a href="' . home_url('/lucca-sitemap.xml') . '">Test sitemap</a>');
+}
+
+// Add admin action to manually flush rules if needed
+if (isset($_GET['lucca_flush_rules']) && current_user_can('manage_options')) {
+    add_action('init', 'lucca_flush_rewrite_rules', 99);
+}
+
+// Alternative approach: Direct URL handling as fallback
+function lucca_direct_sitemap_handler() {
+    $request_uri = $_SERVER['REQUEST_URI'];
+    $sitemap_path = '/lucca-sitemap.xml';
+    
+    // Check if this is a sitemap request
+    if (strpos($request_uri, $sitemap_path) !== false || 
+        parse_url($request_uri, PHP_URL_PATH) == $sitemap_path) {
+        lucca_generate_sitemap();
+    }
+}
+add_action('init', 'lucca_direct_sitemap_handler', 1);
+
+// Debug function to check rewrite rules
+function lucca_debug_rewrite_rules() {
+    if (isset($_GET['debug_lucca_sitemap']) && current_user_can('manage_options')) {
+        global $wp_rewrite;
+        echo '<pre>';
+        echo 'Sitemap URL: ' . home_url('/lucca-sitemap.xml') . "\n\n";
+        echo 'Query vars: ';
+        print_r(get_query_var('lucca_sitemap'));
+        echo "\n\nRewrite rules containing 'lucca':\n";
+        foreach ($wp_rewrite->rules as $pattern => $query) {
+            if (strpos($pattern, 'lucca') !== false || strpos($query, 'lucca') !== false) {
+                echo "$pattern => $query\n";
+            }
+        }
+        echo '</pre>';
+        exit;
+    }
+}
+add_action('init', 'lucca_debug_rewrite_rules', 999);
+
+// Get sitemap links as array
+function get_lucca_sitemap_links() {
+    $sitemap_links = get_option('lucca_sitemap_links', '');
+    
+    if (empty($sitemap_links)) {
+        return array();
+    }
+    
+    // Convert textarea content to array of URLs
+    $urls = array_filter(array_map('trim', explode("\n", $sitemap_links)));
+    
+    // Validate URLs
+    $valid_urls = array();
+    foreach ($urls as $url) {
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            $valid_urls[] = $url;
+        }
+    }
+    
+    return $valid_urls;
+}
